@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">API Retrofit</string>
+    <string name="genre">Genre</string>
+    <string name="titre">Titre</string>
+    <string name="Sauvegarder">Sauvegarder</string>
+    <string name="Ajouter">Ajouter</string>
+    <string name="Supprimer">Supprimer</string>
+</resources>
