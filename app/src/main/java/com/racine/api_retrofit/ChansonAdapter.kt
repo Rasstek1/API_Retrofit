@@ -21,9 +21,15 @@ class ChansonAdapter(context: Context, chansons: List<Chanson>) :
 
         val genreTextView = view.findViewById<TextView>(R.id.textViewGenre)
         val titreTextView = view.findViewById<TextView>(R.id.textViewTitre)
+        val artisteTextView = view.findViewById<TextView>(R.id.textViewArtiste)
+        val albumTextView = view.findViewById<TextView>(R.id.textViewAlbum)
+        val anneeTextView = view.findViewById<TextView>(R.id.textViewAnnee)
 
         genreTextView.text = chanson?.genre
         titreTextView.text = chanson?.titre
+        artisteTextView.text = chanson?.artiste
+        albumTextView.text = chanson?.album
+        anneeTextView.text = chanson?.annee
 
         view.findViewById<View>(R.id.buttonDelete).setOnClickListener {
             chanson?.let {
@@ -33,10 +39,9 @@ class ChansonAdapter(context: Context, chansons: List<Chanson>) :
 
         view.findViewById<View>(R.id.buttonEdit).setOnClickListener {
             chanson?.let {
-                val intent = Intent(context, EditActivity::class.java)
-                intent.putExtra("chanson_id", it.id)
-                intent.putExtra("chanson_genre", it.genre)
-                intent.putExtra("chanson_titre", it.titre)
+                val intent = Intent(context, EditActivity::class.java).apply {
+                    putExtra("chanson_id", it.id)
+                }
                 context.startActivity(intent)
             }
         }

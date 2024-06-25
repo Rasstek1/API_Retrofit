@@ -2,7 +2,11 @@
     <string name="app_name">API Retrofit</string>
     <string name="genre">Genre</string>
     <string name="titre">Titre</string>
+    <string name="artiste">Artiste</string>
+    <string name="album">Album</string>
+    <string name="annee">Année</string>
     <string name="Sauvegarder">Sauvegarder</string>
     <string name="Ajouter">Ajouter</string>
     <string name="Supprimer">Supprimer</string>
+    <string name="Modifier">Modifier</string>
 </resources>

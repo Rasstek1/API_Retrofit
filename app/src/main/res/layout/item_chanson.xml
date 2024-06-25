@@ -11,7 +11,8 @@
         android:text="Genre"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/buttonDelete" />
+        app:layout_constraintEnd_toStartOf="@+id/buttonDelete"
+        android:fontFamily="@font/roboto_bold_italic"/>
 
     <TextView
         android:id="@+id/textViewTitre"
@@ -22,20 +23,55 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/buttonDelete" />
 
-    <Button
+    <TextView
+        android:id="@+id/textViewArtiste"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Artiste"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitre"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonDelete"
+        android:fontFamily="@font/roboto_bold"/>
+
+    <TextView
+        android:id="@+id/textViewAlbum"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Album"
+        app:layout_constraintTop_toBottomOf="@id/textViewArtiste"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonDelete" />
+
+    <TextView
+        android:id="@+id/textViewAnnee"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Année"
+        app:layout_constraintTop_toBottomOf="@id/textViewAlbum"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonDelete" />
+
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonDelete"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Supprimer"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:backgroundTint="@color/buttonColor"
+        android:textColor="@color/buttonTextColor"
+        style="@style/CustomButtonStyle"/>
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonEdit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Modifier"
         app:layout_constraintTop_toBottomOf="@id/buttonDelete"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        android:backgroundTint="@color/buttonColor"
+        android:textColor="@color/buttonTextColor"
+        style="@style/CustomButtonStyle"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

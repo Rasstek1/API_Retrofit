@@ -23,24 +23,41 @@ class EditActivity : AppCompatActivity() {
         chansonId = intent.getIntExtra("chanson_id", 0)
         val genre = intent.getStringExtra("chanson_genre")
         val titre = intent.getStringExtra("chanson_titre")
+        val artiste = intent.getStringExtra("chanson_artiste")
+        val album = intent.getStringExtra("chanson_album")
+        val annee = intent.getStringExtra("chanson_annee")
 
         binding.editTextGenre.setText(genre)
         binding.editTextTitre.setText(titre)
+        binding.editTextArtiste.setText(artiste)
+        binding.editTextAlbum.setText(album)
+
+        // Vérifiez si l'année n'est pas nulle ou vide avant de la définir
+        if (!annee.isNullOrEmpty()) {
+            binding.editTextAnnee.setText(annee)
+        }
 
         binding.buttonSave.setOnClickListener {
             val updatedGenre = binding.editTextGenre.text.toString()
             val updatedTitre = binding.editTextTitre.text.toString()
+            val updatedArtiste = binding.editTextArtiste.text.toString()
+            val updatedAlbum = binding.editTextAlbum.text.toString()
+            val updatedAnnee = binding.editTextAnnee.text.toString()
 
-            if (updatedGenre.isNotEmpty() && updatedTitre.isNotEmpty()) {
-                val chanson = Chanson(chansonId, updatedGenre, updatedTitre)
+            if (updatedGenre.isNotEmpty() && updatedTitre.isNotEmpty() && updatedArtiste.isNotEmpty() && updatedAlbum.isNotEmpty() && updatedAnnee.isNotEmpty()) {
+                val chanson = Chanson(chansonId, updatedGenre, updatedTitre, updatedArtiste, updatedAlbum, updatedAnnee)
                 if (chansonId == 0) {
                     addChanson(chanson)
                 } else {
                     updateChanson(chanson)
                 }
             } else {
-                showToast("Please fill in all fields")
+                showToast("Veuillez remplir tous les champs")
             }
+        }
+
+        binding.buttonRetour.setOnClickListener {
+            finish()
         }
     }
 
@@ -48,15 +65,15 @@ class EditActivity : AppCompatActivity() {
         RetrofitClient.apiService.createChanson(chanson).enqueue(object : Callback<Chanson> {
             override fun onResponse(call: Call<Chanson>, response: Response<Chanson>) {
                 if (response.isSuccessful) {
-                    showToast("Chanson added successfully")
+                    showToast("Chanson ajoutée avec succès")
                     finish()
                 } else {
-                    showToast("Failed to add chanson")
+                    showToast("Échec de l'ajout de la chanson")
                 }
             }
 
             override fun onFailure(call: Call<Chanson>, t: Throwable) {
-                showToast("Error: ${t.message}")
+                showToast("Erreur : ${t.message}")
             }
         })
     }
@@ -65,15 +82,15 @@ class EditActivity : AppCompatActivity() {
         RetrofitClient.apiService.updateChanson(chanson.id, chanson).enqueue(object : Callback<Chanson> {
             override fun onResponse(call: Call<Chanson>, response: Response<Chanson>) {
                 if (response.isSuccessful) {
-                    showToast("Chanson updated successfully")
+                    showToast("Chanson mise à jour avec succès")
                     finish()
                 } else {
-                    showToast("Failed to update chanson")
+                    showToast("Échec de la mise à jour de la chanson")
                 }
             }
 
             override fun onFailure(call: Call<Chanson>, t: Throwable) {
-                showToast("Error: ${t.message}")
+                showToast("Erreur : ${t.message}")
             }
         })
     }

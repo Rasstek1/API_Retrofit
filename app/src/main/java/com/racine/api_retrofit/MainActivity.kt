@@ -53,7 +53,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<List<Chanson>>, t: Throwable) {
-                showToast("Error: ${t.message}")
+                showToast("Erreur: ${t.message}")
             }
         })
     }
@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<Void>, t: Throwable) {
-                showToast("Error: ${t.message}")
+                showToast("Erreur: ${t.message}")
             }
         })
     }
