@@ -1,0 +1,712 @@
+Étape 1 : Configuration du projet
+
+1. Créer un nouveau projet Android dans Android Studio.
+
+2. Ajouter les dépendances nécessaires dans le fichier build.gradle
+
+  buildFeatures {
+        viewBinding = true
+    }
+
+    buildFeatures {
+        dataBinding = true
+    }
+}
+
+dependencies {
+
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
+    implementation(libs.material)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.constraintlayout)
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("io.coil-kt:coil:1.4.0")
+    implementation ("androidx.constraintlayout:constraintlayout:2.0.4")
+    implementation ("com.google.android.material:material:1.4.0")
+}
+
+Étape 2 : Configurer l'accès Internet dans le fichier AndroidManifest.xml
+
+3. Ajouter la permission Internet et déclarer les activités
+
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Permission pour accéder à Internet -->
+    <uses-permission android:name="android.permission.INTERNET"
+        tools:ignore="WrongManifestParent" />
+
+    <application
+        android:allowBackup="true"
+    android:dataExtractionRules="@xml/data_extraction_rules"
+    android:fullBackupContent="@xml/backup_rules"
+    android:icon="@mipmap/ic_launcher"
+    android:label="@string/app_name"
+    android:roundIcon="@mipmap/ic_launcher_round"
+    android:supportsRtl="true"
+    android:theme="@style/Theme.API_Retrofit"
+    tools:targetApi="31">
+
+    <!-- Déclaration de l'activité EditActivity -->
+    <activity android:name=".EditActivity"
+        android:exported="true" /> <!-- Exporté permet à l'activité d'être accessible par d'autres applications -->
+
+    <!-- Déclaration de l'activité MainActivity -->
+    <activity
+        android:name=".MainActivity"
+        android:exported="true">
+        <intent-filter>
+            <!-- Filtre pour l'action principale, rendant cette activité le point d'entrée de l'application -->
+            <action android:name="android.intent.action.MAIN" />
+            <!-- Catégorie pour spécifier que cette activité est l'activité de lancement -->
+            <category android:name="android.intent.category.LAUNCHER" />
+        </intent-filter>
+    </activity>
+</application>
+
+    </manifest>
+
+Étape 3 : Créer le modèle de données
+
+4. Créer une classe de données Chanson dans com.racine.api_retrofit.data
+
+package com.racine.api_retrofit.data
+
+data class Chanson(
+    val id: Int,
+    val genre: String,
+    val titre: String,
+    val artiste: String,
+    val album: String,
+    val annee: String
+)
+
+Étape 4 : Configurer Retrofit
+
+5. Créer une interface ChansonService dans com.racine.api_retrofit.api
+
+package com.racine.api_retrofit.api
+
+import com.racine.api_retrofit.data.Chanson
+import retrofit2.Call
+import retrofit2.http.*
+
+// Interface définissant les appels API pour les chansons
+interface ChansonApiService {
+
+    // Récupération de toutes les chansons
+    @GET("Chansons")
+    fun getAllChansons(): Call<List<Chanson>>
+
+    // Création d'une nouvelle chanson
+    @POST("Chansons")
+    fun createChanson(@Body chanson: Chanson): Call<Chanson>
+
+    // Mise à jour d'une chanson existante
+    @PUT("Chansons/{id}")
+    fun updateChanson(@Path("id") id: Int, @Body chanson: Chanson): Call<Chanson>
+
+    // Suppression d'une chanson
+    @DELETE("Chansons/{id}")
+    fun deleteChanson(@Path("id") id: Int): Call<Void>
+}
+
+6. Créer une classe RetrofitClient dans com.racine.api_retrofit.api
+
+package com.racine.api_retrofit.api
+
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
+// Objet singleton pour la configuration du client Retrofit
+object RetrofitClient {
+    // URL de base pour les requêtes API
+    private const val BASE_URL = "https://65de55c5dccfcd562f56c8ca.mockapi.io/api/"
+
+    // Création du service API avec Retrofit
+    val apiService: ChansonApiService = Retrofit.Builder()
+        .baseUrl(BASE_URL) // Définition de l'URL de base
+        .addConverterFactory(GsonConverterFactory.create()) // Ajout d'un convertisseur pour les objets JSON
+        .build() // Construction de l'instance Retrofit
+        .create(ChansonApiService::class.java) // Création de l'implémentation du service API
+}
+
+Étape 5 : Créer l'interface utilisateur (activités)
+
+7. Créer l'activité principale MainActivity:
+
+import android.content.Intent
+import android.os.Bundle
+import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.racine.api_retrofit.adapter.ChansonAdapter
+import com.racine.api_retrofit.api.RetrofitClient
+import com.racine.api_retrofit.data.Chanson
+import com.racine.api_retrofit.databinding.ActivityMainBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+// Classe pour l'activité principale
+class MainActivity : AppCompatActivity() {
+
+    // Liaison avec la vue
+    private lateinit var binding: ActivityMainBinding
+    // Adaptateur pour la liste des chansons
+    private lateinit var adapter: ArrayAdapter<Chanson>
+    // Liste des chansons
+    private val chansonsList = mutableListOf<Chanson>()
+
+    // Méthode appelée lors de la création de l'activité
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Initialisation de l'adaptateur et assignation à la ListView
+        adapter = ChansonAdapter(this, chansonsList)
+        binding.listView.adapter = adapter
+
+        // Gestion du clic sur le bouton "Ajouter"
+        binding.buttonAdd.setOnClickListener {
+            val intent = Intent(this, EditActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Récupération des chansons au démarrage de l'activité
+        fetchChansons()
+    }
+
+    // Méthode appelée lorsque l'activité revient au premier plan
+    override fun onResume() {
+        super.onResume()
+        fetchChansons() // Rafraîchir la liste à chaque fois que l'activité reprend
+    }
+
+    // Méthode pour récupérer les chansons via l'API
+    private fun fetchChansons() {
+        RetrofitClient.apiService.getAllChansons().enqueue(object : Callback<List<Chanson>> {
+            override fun onResponse(call: Call<List<Chanson>>, response: Response<List<Chanson>>) {
+                if (response.isSuccessful) {
+                    chansonsList.clear()
+                    chansonsList.addAll(response.body() ?: emptyList())
+                    adapter.notifyDataSetChanged()
+                } else {
+                    showToast("Impossible de récupérer les chansons")
+                }
+            }
+
+            override fun onFailure(call: Call<List<Chanson>>, t: Throwable) {
+                showToast("Erreur: ${t.message}")
+            }
+        })
+    }
+
+    // Méthode pour supprimer une chanson via l'API
+    fun deleteChanson(chanson: Chanson) {
+        RetrofitClient.apiService.deleteChanson(chanson.id).enqueue(object : Callback<Void> {
+            override fun onResponse(call: Call<Void>, response: Response<Void>) {
+                if (response.isSuccessful) {
+                    showToast("Suppression réussie")
+                    fetchChansons()
+                } else {
+                    showToast("Impossible de supprimer la chanson")
+                }
+            }
+
+            override fun onFailure(call: Call<Void>, t: Throwable) {
+                showToast("Erreur: ${t.message}")
+            }
+        })
+    }
+
+    // Méthode pour afficher un message Toast
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+}
+
+8. Créer l'activité EditActivity:
+
+import android.os.Bundle
+import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.racine.api_retrofit.api.RetrofitClient
+import com.racine.api_retrofit.data.Chanson
+import com.racine.api_retrofit.databinding.ActivityEditBinding
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+
+// Classe pour l'activité d'édition des chansons
+class EditActivity : AppCompatActivity() {
+
+    // Liaison avec la vue
+    private lateinit var binding: ActivityEditBinding
+    // Identifiant de la chanson à éditer (0 si nouvelle chanson)
+    private var chansonId: Int = 0
+
+    // Méthode appelée lors de la création de l'activité
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityEditBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        // Récupération des données passées via l'intent
+        chansonId = intent.getIntExtra("chanson_id", 0)
+        val genre = intent.getStringExtra("chanson_genre")
+        val titre = intent.getStringExtra("chanson_titre")
+        val artiste = intent.getStringExtra("chanson_artiste")
+        val album = intent.getStringExtra("chanson_album")
+        val annee = intent.getStringExtra("chanson_annee")
+
+        // Pré-remplissage des champs de texte avec les données récupérées
+        binding.editTextGenre.setText(genre)
+        binding.editTextTitre.setText(titre)
+        binding.editTextArtiste.setText(artiste)
+        binding.editTextAlbum.setText(album)
+
+        // Vérifiez si l'année n'est pas nulle ou vide avant de la définir
+        if (!annee.isNullOrEmpty()) {
+            binding.editTextAnnee.setText(annee)
+        }
+
+        // Gestion du clic sur le bouton "Enregistrer"
+        binding.buttonSave.setOnClickListener {
+            val updatedGenre = binding.editTextGenre.text.toString()
+            val updatedTitre = binding.editTextTitre.text.toString()
+            val updatedArtiste = binding.editTextArtiste.text.toString()
+            val updatedAlbum = binding.editTextAlbum.text.toString()
+            val updatedAnnee = binding.editTextAnnee.text.toString()
+
+            // Vérification que tous les champs sont remplis
+            if (updatedGenre.isNotEmpty() && updatedTitre.isNotEmpty() && updatedArtiste.isNotEmpty() && updatedAlbum.isNotEmpty() && updatedAnnee.isNotEmpty()) {
+                val chanson = Chanson(chansonId, updatedGenre, updatedTitre, updatedArtiste, updatedAlbum, updatedAnnee)
+                if (chansonId == 0) {
+                    addChanson(chanson) // Ajout d'une nouvelle chanson
+                } else {
+                    updateChanson(chanson) // Mise à jour d'une chanson existante
+                }
+            } else {
+                showToast("Veuillez remplir tous les champs")
+            }
+        }
+
+        // Gestion du clic sur le bouton "Retour"
+        binding.buttonRetour.setOnClickListener {
+            finish()
+        }
+    }
+
+    // Méthode pour ajouter une nouvelle chanson
+    private fun addChanson(chanson: Chanson) {
+        RetrofitClient.apiService.createChanson(chanson).enqueue(object : Callback<Chanson> {
+            override fun onResponse(call: Call<Chanson>, response: Response<Chanson>) {
+                if (response.isSuccessful) {
+                    showToast("Chanson ajoutée avec succès")
+                    finish()
+                } else {
+                    showToast("Échec de l'ajout de la chanson")
+                }
+            }
+
+            override fun onFailure(call: Call<Chanson>, t: Throwable) {
+                showToast("Erreur : ${t.message}")
+            }
+        })
+    }
+
+    // Méthode pour mettre à jour une chanson existante
+    private fun updateChanson(chanson: Chanson) {
+        RetrofitClient.apiService.updateChanson(chanson.id, chanson).enqueue(object : Callback<Chanson> {
+            override fun onResponse(call: Call<Chanson>, response: Response<Chanson>) {
+                if (response.isSuccessful) {
+                    showToast("Chanson mise à jour avec succès")
+                    finish()
+                } else {
+                    showToast("Échec de la mise à jour de la chanson")
+                }
+            }
+
+            override fun onFailure(call: Call<Chanson>, t: Throwable) {
+                showToast("Erreur : ${t.message}")
+            }
+        })
+    }
+
+    // Méthode pour afficher un message Toast
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+}
+
+Étape 6 : Créer l'adaptateur pour la liste de chansons
+
+package com.racine.api_retrofit.adapter
+
+import android.content.Context
+import android.content.Intent
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ArrayAdapter
+import android.widget.TextView
+import com.racine.api_retrofit.EditActivity
+import com.racine.api_retrofit.MainActivity
+import com.racine.api_retrofit.R
+import com.racine.api_retrofit.data.Chanson
+
+// Adaptateur personnalisé pour afficher une liste de chansons
+class ChansonAdapter(context: Context, chansons: List<Chanson>) :
+    ArrayAdapter<Chanson>(context, 0, chansons) {
+
+    // Méthode pour obtenir la vue de chaque élément de la liste
+    override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
+        // Utilisation de convertView pour recycler les vues, si null, inflater une nouvelle vue
+        val view = convertView ?: LayoutInflater.from(context).inflate(R.layout.item_chanson, parent, false)
+        val chanson = getItem(position)
+
+        // Liaison des vues avec les éléments du layout
+        val genreTextView = view.findViewById<TextView>(R.id.textViewGenre)
+        val titreTextView = view.findViewById<TextView>(R.id.textViewTitre)
+        val artisteTextView = view.findViewById<TextView>(R.id.textViewArtiste)
+        val albumTextView = view.findViewById<TextView>(R.id.textViewAlbum)
+        val anneeTextView = view.findViewById<TextView>(R.id.textViewAnnee)
+
+        // Remplissage des TextViews avec les données de la chanson
+        genreTextView.text = chanson?.genre
+        titreTextView.text = chanson?.titre
+        artisteTextView.text = chanson?.artiste
+        albumTextView.text = chanson?.album
+        anneeTextView.text = chanson?.annee
+
+        // Gestion du clic sur le bouton supprimer
+        view.findViewById<View>(R.id.buttonDelete).setOnClickListener {
+            chanson?.let {
+                (context as MainActivity).deleteChanson(it)
+            }
+        }
+
+        // Gestion du clic sur le bouton modifier
+        view.findViewById<View>(R.id.buttonEdit).setOnClickListener {
+            chanson?.let {
+                val intent = Intent(context, EditActivity::class.java).apply {
+                    putExtra("chanson_id", it.id)
+                }
+                context.startActivity(intent)
+            }
+        }
+
+        return view
+    }
+}
+
+Étape 7 : Créer le layout de l'activité principale
+
+9. Créer le layout pour l'activité principale activity_main.xml:
+
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/buttonAdd"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/buttonAdd"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Ajouter"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/listView"
+            android:backgroundTint="@color/buttonColor"
+            android:textColor="@color/buttonTextColor"
+            style="@style/CustomButtonStyle"
+            android:fontFamily="@font/roboto_bold_italic"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
+
+Étape 8 : Créer le layout de l'activité d'édition
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutGenre"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextGenre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Genre"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutTitre"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutGenre"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextTitre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Titre"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutArtiste"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutTitre"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextArtiste"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Artiste"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutAlbum"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutArtiste"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextAlbum"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Album"
+            android:inputType="text" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/textInputLayoutAnnee"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutAlbum"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/editTextAnnee"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Année"
+            android:inputType="number" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonSave"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Enregistrer"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutAnnee"
+        app:layout_constraintEnd_toStartOf="@+id/buttonRetour"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:backgroundTint="@color/buttonColor"
+        android:textColor="@color/buttonTextColor"
+        style="@style/CustomButtonStyle" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonRetour"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Retour"
+        app:layout_constraintTop_toBottomOf="@id/textInputLayoutAnnee"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/buttonSave"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
+        android:backgroundTint="@color/buttonColor"
+        android:textColor="@color/buttonTextColor"
+        style="@style/CustomButtonStyle" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+Étape 9 : Créer le layout pour chaque élément de la liste
+
+10. Créer le layout pour chaque élément de la liste item_chanson.xml:
+
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/textViewGenre"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Genre"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonDelete"
+        android:fontFamily="@font/roboto_bold_italic"/>
+
+    <TextView
+        android:id="@+id/textViewTitre"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Titre"
+        app:layout_constraintTop_toBottomOf="@id/textViewGenre"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonDelete" />
+
+    <TextView
+        android:id="@+id/textViewArtiste"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Artiste"
+        app:layout_constraintTop_toBottomOf="@id/textViewTitre"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonDelete"
+        android:fontFamily="@font/roboto_bold"/>
+
+    <TextView
+        android:id="@+id/textViewAlbum"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Album"
+        app:layout_constraintTop_toBottomOf="@id/textViewArtiste"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonDelete" />
+
+    <TextView
+        android:id="@+id/textViewAnnee"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Année"
+        app:layout_constraintTop_toBottomOf="@id/textViewAlbum"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/buttonDelete" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonDelete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Supprimer"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:backgroundTint="@color/buttonColor"
+        android:textColor="@color/buttonTextColor"
+        style="@style/CustomButtonStyle"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/buttonEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Modifier"
+        app:layout_constraintTop_toBottomOf="@id/buttonDelete"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:backgroundTint="@color/buttonColor"
+        android:textColor="@color/buttonTextColor"
+        style="@style/CustomButtonStyle"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+Étape 7 : Créer les ressources de style et couleur
+
+11. Créer le fichier colors.xml dans res/values:
+
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
+    <color name="backgroundColor">#FFFFFF</color>
+    <color name="colorPrimaryVariant">#3700B3</color>
+    <color name="colorOnPrimary">#FFFFFF</color>
+    <color name="buttonColor">#03DAC5</color>
+    <color name="buttonTextColor">#FFFFFF</color>
+</resources>
+
+12. Créer le fichier styles.xml dans res/values:
+
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="CustomButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColor">@color/buttonTextColor</item>
+        <item name="android:backgroundTint">@color/buttonColor</item>
+        <item name="android:fontFamily">@font/roboto_bold_italic</item>
+    </style>
+</resources>
+
+Étape 8 : Configurer les polices
+
+13. Ajouter les polices Roboto-BoldItalic.ttf et Roboto-Regular.ttf dans le dossier res/font
+
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <font-family xmlns:app="http://schemas.android.com/apk/res-auto">
+        <font
+            app:fontStyle="normal"
+            app:fontWeight="400"
+            app:font="@font/roboto_regular" />
+        <font
+            app:fontStyle="italic"
+            app:fontWeight="400"
+            app:font="@font/roboto_italic" />
+        <font
+            app:fontStyle="normal"
+            app:fontWeight="700"
+            app:font="@font/roboto_bold" />
+    </font-family>
+</resources>

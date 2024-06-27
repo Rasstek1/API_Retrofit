@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Déclaration de la disposition de l'activité -->
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -6,6 +7,7 @@
     android:layout_height="wrap_content"
     android:padding="16dp">
 
+    <!-- Champ de saisie pour le genre -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutGenre"
         android:layout_width="0dp"
@@ -23,6 +25,7 @@
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- Champ de saisie pour le titre -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutTitre"
         android:layout_width="0dp"
@@ -40,6 +43,7 @@
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- Champ de saisie pour l'artiste -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutArtiste"
         android:layout_width="0dp"
@@ -57,6 +61,7 @@
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- Champ de saisie pour l'album -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutAlbum"
         android:layout_width="0dp"
@@ -74,6 +79,7 @@
             android:inputType="text" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- Champ de saisie pour l'année -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/textInputLayoutAnnee"
         android:layout_width="0dp"
@@ -91,6 +97,7 @@
             android:inputType="number" />
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- Bouton pour enregistrer -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonSave"
         android:layout_width="0dp"
@@ -105,6 +112,7 @@
         android:textColor="@color/buttonTextColor"
         style="@style/CustomButtonStyle" />
 
+    <!-- Bouton pour retourner -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonRetour"
         android:layout_width="0dp"

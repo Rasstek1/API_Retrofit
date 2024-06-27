@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Déclaration du layout avec l'utilisation de l'espace de noms Android -->
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <!-- Texte pour afficher le genre de la chanson -->
     <TextView
         android:id="@+id/textViewGenre"
         android:layout_width="0dp"
@@ -14,6 +16,7 @@
         app:layout_constraintEnd_toStartOf="@+id/buttonDelete"
         android:fontFamily="@font/roboto_bold_italic"/>
 
+    <!-- Texte pour afficher le titre de la chanson -->
     <TextView
         android:id="@+id/textViewTitre"
         android:layout_width="0dp"
@@ -23,6 +26,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/buttonDelete" />
 
+    <!-- Texte pour afficher l'artiste de la chanson -->
     <TextView
         android:id="@+id/textViewArtiste"
         android:layout_width="0dp"
@@ -33,6 +37,7 @@
         app:layout_constraintEnd_toStartOf="@+id/buttonDelete"
         android:fontFamily="@font/roboto_bold"/>
 
+    <!-- Texte pour afficher l'album de la chanson -->
     <TextView
         android:id="@+id/textViewAlbum"
         android:layout_width="0dp"
@@ -42,6 +47,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/buttonDelete" />
 
+    <!-- Texte pour afficher l'année de la chanson -->
     <TextView
         android:id="@+id/textViewAnnee"
         android:layout_width="0dp"
@@ -51,6 +57,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/buttonDelete" />
 
+    <!-- Bouton pour supprimer la chanson -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonDelete"
         android:layout_width="wrap_content"
@@ -62,6 +69,7 @@
         android:textColor="@color/buttonTextColor"
         style="@style/CustomButtonStyle"/>
 
+    <!-- Bouton pour modifier la chanson -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonEdit"
         android:layout_width="wrap_content"
@@ -72,6 +80,5 @@
         android:backgroundTint="@color/buttonColor"
         android:textColor="@color/buttonTextColor"
         style="@style/CustomButtonStyle"/>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

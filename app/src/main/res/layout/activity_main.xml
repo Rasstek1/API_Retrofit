@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Déclaration du layout avec l'utilisation de l'espace de noms Android -->
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
 
     <data>
-        <!-- Ajoutez des variables de données ici si nécessaire -->
+        <!-- Section pour déclarer des variables de liaison de données (si nécessaire) -->
     </data>
 
+    <!-- Disposition principale de l'activité utilisant ConstraintLayout -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- Liste pour afficher les chansons -->
         <ListView
             android:id="@+id/listView"
             android:layout_width="0dp"
@@ -21,6 +24,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Bouton pour ajouter une nouvelle chanson -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonAdd"
             android:layout_width="wrap_content"
@@ -34,8 +38,5 @@
             android:textColor="@color/buttonTextColor"
             style="@style/CustomButtonStyle"
             android:fontFamily="@font/roboto_bold_italic"/>
-
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
