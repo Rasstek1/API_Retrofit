@@ -3,7 +3,7 @@ package com.racine.api_retrofit.api
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-// Objet singleton pour la configuration du client Retrofit
+// Objet singleton pour la configuration du client Retrofit singleton est un modèle de conception qui garantit qu'une classe n'a qu'une seule instance et fournit un point d'accès global à cette instance.
 object RetrofitClient {
     // URL de base pour les requêtes API
     private const val BASE_URL = "https://65de55c5dccfcd562f56c8ca.mockapi.io/api/"

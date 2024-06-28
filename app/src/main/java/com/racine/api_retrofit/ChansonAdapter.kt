@@ -14,7 +14,7 @@ import com.racine.api_retrofit.data.Chanson
 
 // Adaptateur personnalisé pour afficher une liste de chansons
 class ChansonAdapter(context: Context, chansons: List<Chanson>) :
-    ArrayAdapter<Chanson>(context, 0, chansons) {
+    ArrayAdapter<Chanson>(context, 0, chansons) { // Héritage de ArrayAdapter<Chanson> auraitpu etre baseAdapter!
 
     // Méthode pour obtenir la vue de chaque élément de la liste
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
@@ -48,6 +48,11 @@ class ChansonAdapter(context: Context, chansons: List<Chanson>) :
             chanson?.let {
                 val intent = Intent(context, EditActivity::class.java).apply {
                     putExtra("chanson_id", it.id)
+                    putExtra("chanson_genre", it.genre)
+                    putExtra("chanson_titre", it.titre)
+                    putExtra("chanson_artiste", it.artiste)
+                    putExtra("chanson_album", it.album)
+                    putExtra("chanson_annee", it.annee)
                 }
                 context.startActivity(intent)
             }

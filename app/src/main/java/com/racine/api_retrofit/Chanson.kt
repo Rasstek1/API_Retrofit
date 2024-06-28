@@ -1,6 +1,9 @@
 package com.racine.api_retrofit.data
 
-// Classe de données représentant une chanson
+// Classe de données représentant une chanson- data class est une classe qui
+// contient uniquement des données et fournit des fonctionnalités de copie, de déstructuration et d'égalité.
+//La difference avec une classe normale est que les méthodes equals(),
+// hashCode(), toString() sont générées automatiquement.
 data class Chanson(
     val id: Int,         // Identifiant unique de la chanson
     val genre: String,   // Genre musical de la chanson

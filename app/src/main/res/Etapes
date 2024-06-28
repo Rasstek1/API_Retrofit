@@ -24,7 +24,7 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")<!--Gson nous permet de convertir les objets JSON en objets Java-->
     implementation("io.coil-kt:coil:1.4.0")
     implementation ("androidx.constraintlayout:constraintlayout:2.0.4")
     implementation ("com.google.android.material:material:1.4.0")

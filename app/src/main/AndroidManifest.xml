@@ -3,21 +3,21 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Permission pour accéder à Internet -->
-    <uses-permission android:name="android.permission.INTERNET"
-        tools:ignore="WrongManifestParent" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <!--tools:ignore="WrongManifestParent" />-->
 
-    <application
-        android:allowBackup="true"
-    android:dataExtractionRules="@xml/data_extraction_rules"
-    android:fullBackupContent="@xml/backup_rules"
-    android:icon="@mipmap/ic_launcher"
-    android:label="@string/app_name"
-    android:roundIcon="@mipmap/ic_launcher_round"
-    android:supportsRtl="true"
-    android:theme="@style/Theme.API_Retrofit"
-    tools:targetApi="31">
+<application
+    android:allowBackup="true"
+android:dataExtractionRules="@xml/data_extraction_rules"
+android:fullBackupContent="@xml/backup_rules"
+android:icon="@mipmap/ic_launcher"
+android:label="@string/app_name"
+android:roundIcon="@mipmap/ic_launcher_round"
+android:supportsRtl="true"
+android:theme="@style/Theme.API_Retrofit"
+tools:targetApi="31">
 
-    <!-- Déclaration de l'activité EditActivity -->
+<!-- Déclaration de l'activité EditActivity -->
     <activity android:name=".EditActivity"
         android:exported="true" /> <!-- Exporté permet à l'activité d'être accessible par d'autres applications -->
 
