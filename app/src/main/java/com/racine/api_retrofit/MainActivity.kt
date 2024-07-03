@@ -30,6 +30,12 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, EditActivity::class.java)
             startActivity(intent)
         }
+        // Ajouter l'action du bouton pour afficher l'image
+        binding.buttonShowImage.setOnClickListener {
+            val intent = Intent(this, ImageActivity::class.java)
+            intent.putExtra("image_url", "https://example.com/image.jpg")
+            startActivity(intent)
+        }
 
         fetchChansons()
     }

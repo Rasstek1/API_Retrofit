@@ -58,4 +58,5 @@ dependencies {
     implementation("io.coil-kt:coil:1.4.0")
     implementation ("androidx.constraintlayout:constraintlayout:2.0.4")
     implementation ("com.google.android.material:material:1.4.0")
+    implementation("io.coil-kt:coil:2.6.0")
 }
