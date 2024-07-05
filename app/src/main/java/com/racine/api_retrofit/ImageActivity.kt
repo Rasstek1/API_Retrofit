@@ -27,4 +27,4 @@ class ImageActivity : AppCompatActivity() {
         }
     }
 }
-
+//
